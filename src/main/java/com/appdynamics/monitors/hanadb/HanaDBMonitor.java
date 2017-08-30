@@ -55,7 +55,7 @@ public class HanaDBMonitor extends AManagedMonitor {
             logger.info("Finished HanaDB monitor execution");
             return new TaskOutput("Finished HanaDB monitor execution");
         } catch (Exception e) {
-            throw new TaskExecutionException("Failed to execute the Postgres monitoring task" + e);
+            throw new TaskExecutionException();
         }
     }
 

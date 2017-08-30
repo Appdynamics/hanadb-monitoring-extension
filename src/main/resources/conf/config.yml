@@ -1,0 +1,46 @@
+# HanaDB Host/IP and port.
+host: ""
+port: ""
+
+# Specify this key if Password Encryption Support is required. If not keep it empty
+# If specified, DBPassword is now the encrypted passwords.
+encryptionPassword: ""
+encryptionKey: ""
+
+# DB username and password.
+username: ""
+password: ""
+
+jdbcPrefix: "jdbc:sap://"
+jdbcOptions: "?communicationtimeout=2000"
+
+#prefix used to show up metrics in AppDynamics
+metricPathPrefix: "Custom Metrics|HanaDB"
+#This will create it in specific Tier. Replace <TIER_ID>
+#metricPrefix:  "Server|Component:<TIER_ID>|Custom Metrics|HanaDB Server|"
+# number of concurrent tasks
+numberOfThreads: 10
+
+queries:
+  - statement: "select * from M_DISK_USAGE where USED_SIZE >= 0"
+    columns:
+     - name: "HOST"
+       type: "name"
+     - name: "USAGE_TYPE"
+       type: "name"
+     - name: "USED_SIZE"
+       type: "metric"
+       convertFrom: ""
+       convertTo: ""
+  - statement: "select HOST, USED_PHYSICAL_MEMORY, FREE_PHYSICAL_MEMORY from M_HOST_RESOURCE_UTILIZATION"
+    columns:
+     - name: "HOST"
+       type: "name"
+     - name: "USED_PHYSICAL_MEMORY"
+       type: "metric"
+       convertFrom: ""
+       convertTo: ""
+     - name: "FREE_PHYSICAL_MEMORY"
+       type: "metric"
+       convertFrom: ""
+       convertTo: ""

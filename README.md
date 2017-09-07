@@ -13,11 +13,11 @@ Deployable on premise or in the cloud, SAP HANA is an in-memory data platform th
 
 ## Installation
 
-Either [Download the Extension from the AppDynamics Marketplace](https://www.appdynamics.com/community/exchange/hanadb-monitoring-extension/) or [Build from Source](#Build from Source)
+Either [Download the Extension from the AppDynamics Marketplace](https://www.appdynamics.com/community/exchange/hanadb-monitoring-extension/) or Build from Source.
 
 1. Deploy the `HanaDBMonitor-<VERSION>.zip` file into the `<machine agent home>/monitors` directory.
 
-`> unzip HanaDBMonitor-<VERSION>.zip -d <machine agent home>/monitors/`
+  `> unzip HanaDBMonitor-<VERSION>.zip -d <machine agent home>/monitors/`
 
 2. Copy the **ngdbc.jar** in the `<machine agent home>/monitors/HanaDBMonitor/` folder
 
@@ -47,6 +47,7 @@ Either [Download the Extension from the AppDynamics Marketplace](https://www.app
   # number of concurrent tasks
   numberOfThreads: 10
 
+  #Metrics can be converted from b (bytes), to kb (kilobytes), to gb (gigabytes), to tb (terabytes). Use the convertFrom and convertTo properties for this.
   queries:
     - statement: "select * from M_DISK_USAGE where USED_SIZE >= 0"
       columns:
@@ -70,6 +71,7 @@ Either [Download the Extension from the AppDynamics Marketplace](https://www.app
          type: "metric"
          convertFrom: ""
          convertTo: ""
+
 
   ```
 

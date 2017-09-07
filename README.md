@@ -4,18 +4,24 @@ This extension works only with the standalone machine agent.
 
 ## Use Case
 
-## Prerequisite
+Deployable on premise or in the cloud, SAP HANA is an in-memory data platform that lets you accelerate business processes, deliver more business intelligence, and simplify your IT environment. By providing the foundation for all your data needs, SAP HANA removes the burden of maintaining separate legacy systems and siloed data, so you can run live and make better business decisions in the new digital economy. HanaDB Monitoring Extension gathers metrics and sends them to the AppDynamics Metric Browser.
+
+## Prerequisites
+
+ * This extension requires the Java Machine Agent.
+ * The HanaDB Driver **ngdbc.jar** is required
 
 ## Installation
 
-1. Run `maven clean install`. Deploy the HanaDBMonitor-<VERSION>.zip file found in 'target' into the \<machine agent home\>/monitors directory.
+Either [Download the Extension from the AppDynamics Marketplace](https://www.appdynamics.com/community/exchange/hanadb-monitoring-extension/) or [Build from Source](#Build from Source)
 
-  ```   
-  > cd <machine agent home>/monitors/
-  > unzip HanaDBMonitor-<VERSION>.zip
-  ```
+1. Deploy the `HanaDBMonitor-<VERSION>.zip` file into the `<machine agent home>/monitors` directory.
 
-2. Set up config.yml:
+`> unzip HanaDBMonitor-<VERSION>.zip -d <machine agent home>/monitors/`
+
+2. Copy the **ngdbc.jar** in the `<machine agent home>/monitors/HanaDBMonitor/` folder
+
+3. Set up config.yml:
 
   ```
   # HanaDB Host/IP and port.
@@ -69,6 +75,12 @@ This extension works only with the standalone machine agent.
 
 3. Restart the Machine Agent.
 
+## Build from Source
+
+1. Clone this repository
+2. Run `mvn clean install`
+3. The `HanaDBMonitor-<VERSION>.zip` file can be found in the `target` directory
+
 ## Directory Structure
 
 <table><tbody>
@@ -98,9 +110,38 @@ This extension works only with the standalone machine agent.
 
 ## Metrics
 
-#### config.yml
+Metrics can be configured in the `config.yml`file.
 
-## Custom Metrics
+A reference for the [HanaDB System Views can be found here](https://help.sap.com/viewer/4fe29514fd584807ac9f2a04f6754767/2.0.00/en-US/20cbb10c75191014b47ba845bfe499fe.html)
+
+The Queries can be adjusted to your needs to gather metrics from the HanaDB. Please see below example:
+
+```
+queries:
+  - statement: "select * from M_DISK_USAGE where USED_SIZE >= 0"
+    columns:
+     - name: "HOST"
+       type: "name"
+     - name: "USAGE_TYPE"
+       type: "name"
+     - name: "USED_SIZE"
+       type: "metric"
+       convertFrom: ""
+       convertTo: ""
+  - statement: "select HOST, USED_PHYSICAL_MEMORY, FREE_PHYSICAL_MEMORY from M_HOST_RESOURCE_UTILIZATION"
+    columns:
+     - name: "HOST"
+       type: "name"
+     - name: "USED_PHYSICAL_MEMORY"
+       type: "metric"
+       convertFrom: ""
+       convertTo: ""
+     - name: "FREE_PHYSICAL_MEMORY"
+       type: "metric"
+       convertFrom: ""
+       convertTo: ""
+
+```
 
 ## Contributing
 

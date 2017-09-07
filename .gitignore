@@ -1,0 +1,5 @@
+/target
+/lib
+hanadb-monitoring-extension.iml
+/.idea
+.DS_Store

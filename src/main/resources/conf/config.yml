@@ -14,13 +14,15 @@ password: ""
 jdbcPrefix: "jdbc:sap://"
 jdbcOptions: "?communicationtimeout=2000"
 
-#prefix used to show up metrics in AppDynamics
+# prefix used to show up metrics in AppDynamics
 metricPathPrefix: "Custom Metrics|HanaDB"
-#This will create it in specific Tier. Replace <TIER_ID>
-#metricPrefix:  "Server|Component:<TIER_ID>|Custom Metrics|HanaDB Server|"
+# This will create it in specific Tier. Replace <TIER_ID>
+# metricPrefix:  "Server|Component:<TIER_ID>|Custom Metrics|HanaDB Server|"
 # number of concurrent tasks
 numberOfThreads: 10
 
+# Metrics can be converted from b (bytes), to kb (kilobytes), to gb (gigabytes), to tb (terabytes).
+# Use the convertFrom and convertTo properties for this.
 queries:
   - statement: "select * from M_DISK_USAGE where USED_SIZE >= 0"
     columns:

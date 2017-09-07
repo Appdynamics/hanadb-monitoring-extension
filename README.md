@@ -72,8 +72,6 @@ Either [Download the Extension from the AppDynamics Marketplace](https://www.app
          type: "metric"
          convertFrom: ""
          convertTo: ""
-
-
   ```
 
 3. Restart the Machine Agent.

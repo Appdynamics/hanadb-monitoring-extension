@@ -1,100 +1,77 @@
 package com.appdynamics.monitors.hanadb;
 
-import com.appdynamics.extensions.PathResolver;
 import com.appdynamics.extensions.conf.MonitorConfiguration;
+import com.appdynamics.extensions.conf.MonitorConfiguration.ConfItem;
 import com.appdynamics.extensions.util.MetricWriteHelper;
 import com.appdynamics.extensions.util.MetricWriteHelperFactory;
-import com.appdynamics.monitors.hanadb.config.Config;
-import com.appdynamics.monitors.hanadb.config.Query;
-import com.google.common.base.Strings;
+import com.appdynamics.monitors.hanadb.config.Globals;
 import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
 import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import static com.appdynamics.monitors.hanadb.Utilities.convertToString;
-
-/**
- * Created by michi on 18.02.17.
- */
+@SuppressWarnings("WeakerAccess")
 public class HanaDBMonitor extends AManagedMonitor {
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(HanaDBMonitor.class);
-    private boolean initialized = false;
-    private Config config;
-    private ExecutorService executor;
-    private MetricWriteHelper metricWriteHelper;
+    private static final Logger logger = LoggerFactory.getLogger(HanaDBMonitor.class);
+    private MonitorConfiguration configuration;
 
     public HanaDBMonitor() { logger.info(String.format("Using HanaDB Monitor Version [%s]", getImplementationVersion())); }
 
-    private void initialize(Map<String, String> args) throws Exception {
-        if (!initialized) {
-            logger.debug("The raw arguments are {}", args);
-            metricWriteHelper = MetricWriteHelperFactory.create(this);
-            Yaml yaml = new Yaml();
-            String configFilename = getConfigFilename(args.get("config-file"));
-            FileInputStream fis = new FileInputStream(configFilename);
-            Config config = yaml.loadAs(fis, Config.class);
-            config.checkBaseConfig();
-            this.config = config;
-            initialized = true;
+    public void initialize(Map<String, String> argsMap) {
+        if (configuration == null) {
+            MetricWriteHelper metricWriteHelper = MetricWriteHelperFactory.create(this);
+            MonitorConfiguration conf = new MonitorConfiguration(Globals.defaultMetricPrefix,
+                    new TaskRunnable(), metricWriteHelper);
+            final String configFilePath = argsMap.get(Globals.configFile);
+            conf.setConfigYml(configFilePath);
+            conf.setMetricWriter(MetricWriteHelperFactory.create(this));
+            conf.checkIfInitialized(ConfItem.CONFIG_YML, ConfItem.EXECUTOR_SERVICE, ConfItem.METRIC_PREFIX, ConfItem.METRIC_WRITE_HELPER);
+            this.configuration = conf;
         }
     }
 
-    public TaskOutput execute(Map<String, String> args, TaskExecutionContext taskExecutionContext) throws TaskExecutionException {
-        try {
-            if (!initialized) { initialize(args); }
-            executor = Executors.newFixedThreadPool(config.getNumberOfThreads());
-            executor.execute(new TaskRunner());
-            logger.info("Finished HanaDB monitor execution");
-            return new TaskOutput("Finished HanaDB monitor execution");
-        } catch (Exception e) {
-            throw new TaskExecutionException();
+    public TaskOutput execute(Map<String, String> map, TaskExecutionContext taskExecutionContext) throws TaskExecutionException {
+        try{
+            if(map != null){
+                if (logger.isDebugEnabled()) {logger.debug("The raw arguments are {}", map);}
+                initialize(map);
+                configuration.executeTask();
+                return new TaskOutput("HanaDB Monitor Metric Upload Complete");
+            }
         }
+        catch(Exception e) {
+            logger.error("Failed to execute the HanaDB monitoring task", e);
+        }
+        throw new TaskExecutionException("HanaDB monitoring task completed with failures.");
     }
 
-    private class TaskRunner implements Runnable {
+    public class TaskRunnable implements Runnable {
+        @SuppressWarnings("unchecked")
         public void run () {
-            if (!initialized) { logger.info("HanaDB Monitor is still initializing"); return; }
+            Map<String, ?> config = configuration.getConfigYml();
             if (config != null) {
-                Query[] queries = config.getQueries();
-                if (queries != null) {
-                    for (Query query : queries) {
-                        try {
-                            HanaDBMonitorTask task = createTask(query);
-                            executor.execute(task);
-                        } catch (Exception e) { logger.error("Cannot construct Query for {}", convertToString(query.getStatement(), "")); }
+                List<Map> queries = (List<Map>) config.get(Globals.queries);
+                ArrayList servers = (ArrayList) config.get(Globals.hosts);
+                if (queries != null && !queries.isEmpty() && servers != null && !servers.isEmpty()) {
+                    for (Map<String, String> server : (Iterable<Map<String, String>>) servers) {
+                        for (Map query : queries) {
+                            String password = Utilities.getPassword(config);
+                            String url = config.get(Globals.jdbcPrefix) + server.get(Globals.host) + config.get(Globals.jdbcOptions);
+                            JDBCConnectionAdapter jdbcConnectionAdapter = new JDBCConnectionAdapter(url, (String) config.get(Globals.userName), password);
+                            HanaDBMonitorTask task = new HanaDBMonitorTask(configuration, jdbcConnectionAdapter, query);
+                            configuration.getExecutorService().execute(task);
+                        }
                     }
                 } else { logger.error("There are no Queries configured."); }
             } else { logger.error("The config.yml is not loaded due to previous errors. The task will not run"); }
         }
     }
 
-    private HanaDBMonitorTask createTask (Query query) {
-        String password = Utilities.getPassword(config);
-        String url = Utilities.getURL(config);
-        JDBCConnectionAdapter jdbcConnectionAdapter = JDBCConnectionAdapter.create(url,config.getUsername(),password);
-        return new HanaDBMonitorTask.Builder().
-                metricWriter(metricWriteHelper).
-                metricPrefix(config.getMetricPathPrefix()).
-                jdbcConnectionAdapter(jdbcConnectionAdapter).
-                query(query).build();
-    }
-
     private static String getImplementationVersion() { return HanaDBMonitor.class.getPackage().getImplementationTitle(); }
-
-    private String getConfigFilename(String filename) {
-        if (filename == null) { return ""; }
-        if (new File(filename).exists()) { return filename; }
-        File jarPath = PathResolver.resolveDirectory(AManagedMonitor.class);
-        String configFileName = "";
-        if (!Strings.isNullOrEmpty(filename)) { configFileName = jarPath + File.separator + filename; }
-        return configFileName;
-    }
 }

@@ -8,9 +8,7 @@ import java.math.BigDecimal;
 
 import static com.appdynamics.monitors.hanadb.Utilities.toBigIntString;
 
-/**
- * Created by michi on 20.02.17.
- */
+@SuppressWarnings("SameParameterValue")
 class MetricPrinter {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(MetricPrinter.class);
     private final MetricWriteHelper metricWriter;

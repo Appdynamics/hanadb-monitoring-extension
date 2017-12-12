@@ -58,14 +58,6 @@ class Utilities {
         return null;
     }
 
-    static String getURL(Map<String, ?> config) {
-        return  config.get(Globals.jdbcPrefix) +
-                (String) config.get(Globals.host) +
-                ":" +
-                config.get(Globals.port) +
-                config.get(Globals.jdbcOptions);
-    }
-
     static String getJdbcDriverClass(Map<String, ?> config) {
         if(config.get(Globals.driver) != null){
             Globals.jdbcDriverClass = (String) config.get(Globals.driver);

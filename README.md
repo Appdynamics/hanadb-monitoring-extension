@@ -10,9 +10,9 @@ Deployable on premise or in the cloud, SAP HANA is an in-memory data platform th
 
  * This extension requires the Java Machine Agent.
  * The HanaDB Driver **ngdbc.jar** is required
- * A HanaDB User with the following privileges is required:
-   * MONITORING: this role contains privileges for full read-only access to all metadata, the current system status in system and monitoring views, and the data collected by the statistics server
-   * PUBLIC: this role contains privileges for filtered read-only access to the system views
+ * A HanaDB User with the following **privileges** is required:
+   * **MONITORING:** this role contains privileges for full read-only access to all metadata, the current system status in system and monitoring views, and the data collected by the statistics server
+   * **PUBLIC:** this role contains privileges for filtered read-only access to the system views
 
 ## Installation
 

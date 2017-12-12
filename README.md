@@ -16,7 +16,7 @@ Deployable on premise or in the cloud, SAP HANA is an in-memory data platform th
 
 ## Installation
 
-Either [Download the Extension from the AppDynamics Marketplace](https://www.appdynamics.com/community/exchange/hanadb-monitoring-extension/) or Build from Source.
+Either [Download the Extension from the AppDynamics Marketplace](https://www.appdynamics.com/community/exchange/hanadb-monitoring-extension/), [Download the Extension from the Github release](https://github.com/michaelenglert/hanadb-monitoring-extension/releases/latest) or Build from Source.
 
 1. Deploy the `HanaDBMonitor-<VERSION>.zip` file into the `<machine agent home>/monitors` directory.
 

@@ -1,21 +1,16 @@
 # HanaDB Host/IP and port.
-host: ""
-port: ""
-
-# Specify this key if Password Encryption Support is required. If not keep it empty
-# If specified, DB Password is now the encrypted passwords.
-encryptionPassword: ""
-encryptionKey: ""
+host: "5.189.161.196"
+port: "39013"
 
 # DB username and password.
-username: ""
-password: ""
+username: "system"
+password: "P455w0rd"
 
 jdbcPrefix: "jdbc:sap://"
 jdbcOptions: "?communicationtimeout=2000"
 
 # prefix used to show up metrics in AppDynamics
-metricPathPrefix: "Custom Metrics|HanaDB"
+metricPrefix: "Custom Metrics|HanaDB"
 # This will create it in specific Tier. Replace <TIER_ID>
 # metricPrefix:  "Server|Component:<TIER_ID>|Custom Metrics|HanaDB Server|"
 # number of concurrent tasks

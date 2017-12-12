@@ -1,10 +1,11 @@
-<!--suppress CheckTagEmptyBody, XmlUnboundNsPrefix -->
+<!--suppress ALL -->
+
 <monitor>
     <name>HanaDB Monitor</name>
     <type>managed</type>
     <enabled>true</enabled>
     <description>HanaDB server monitor</description>
-    <monitor-configuration></monitor-configuration>
+    <monitor-configuration/>
     <monitor-run-task>
         <execution-style>periodic</execution-style>
         <execution-frequency-in-seconds>60</execution-frequency-in-seconds>

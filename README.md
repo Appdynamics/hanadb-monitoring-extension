@@ -10,10 +10,13 @@ Deployable on premise or in the cloud, SAP HANA is an in-memory data platform th
 
  * This extension requires the Java Machine Agent.
  * The HanaDB Driver **ngdbc.jar** is required
+ * A HanaDB User with the following **privileges** is required:
+   * **MONITORING:** this role contains privileges for full read-only access to all metadata, the current system status in system and monitoring views, and the data collected by the statistics server
+   * **PUBLIC:** this role contains privileges for filtered read-only access to the system views
 
 ## Installation
 
-Either [Download the Extension from the AppDynamics Marketplace](https://www.appdynamics.com/community/exchange/hanadb-monitoring-extension/) or Build from Source.
+Either [Download the Extension from the AppDynamics Marketplace](https://www.appdynamics.com/community/exchange/hanadb-monitoring-extension/), [Download the Extension from the Github release](https://github.com/michaelenglert/hanadb-monitoring-extension/releases/latest) or Build from Source.
 
 1. Deploy the `HanaDBMonitor-<VERSION>.zip` file into the `<machine agent home>/monitors` directory.
 
@@ -24,9 +27,9 @@ Either [Download the Extension from the AppDynamics Marketplace](https://www.app
 3. Set up config.yml:
 
   ```
-  # HanaDB Host/IP and port.
-  host: ""
-  port: ""
+  # HanaDB Servers. If you have Failover Partners please concatenate them here like "<failoverserver1-host>:<failoverserver1-port>;<failoverserver2-host>:<failoverserver2-port>"
+  hosts:
+    - host: ""
 
   # Specify this key if Password Encryption Support is required. If not keep it empty
   # If specified, DBPassword is now the encrypted passwords.
@@ -34,6 +37,7 @@ Either [Download the Extension from the AppDynamics Marketplace](https://www.app
   encryptionKey: ""
 
   # DB username and password.
+  # User needs the permissions MONITORING and PUBLIC
   username: ""
   password: ""
 
@@ -143,6 +147,14 @@ queries:
        convertTo: ""
 
 ```
+
+## Password Encryption Support
+
+To avoid setting the clear text password in the config.yml. Please follow the process to encrypt the password and set the encrypted password and the key in the config.yml
+
+* Download the util jar to encrypt the password from [here](https://github.com/Appdynamics/maven-repo/blob/master/releases/com/appdynamics/appd-exts-commons/2.0.0/appd-exts-commons-2.0.0.jar)
+* Encrypt password from the commandline 
+  * `java -cp appd-exts-commons-<VERSION>.jar com.appdynamics.extensions.crypto.Encryptor myKey myPassword`
 
 ## Contributing
 

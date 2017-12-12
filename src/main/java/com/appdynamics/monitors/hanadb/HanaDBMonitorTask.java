@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
 
-@SuppressWarnings("unchecked")
 class HanaDBMonitorTask implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(HanaDBMonitorTask.class);
     private final Map query;
@@ -34,6 +33,7 @@ class HanaDBMonitorTask implements Runnable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void runTask() {
         try {
             MetricPrinter metricPrinter = new MetricPrinter(configuration.getMetricWriter());
@@ -71,6 +71,7 @@ class HanaDBMonitorTask implements Runnable {
                 }
             }
             jdbcConnectionAdapter.closeConnection(connection);
+            logger.info("Finished working on Result Set");
         } catch (SQLException e) {
             logger.error(e.getMessage(),e);
         } catch (Exception e) {

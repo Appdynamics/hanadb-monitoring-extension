@@ -10,7 +10,6 @@ public class Globals {
     public static final String passwordEncrypted = "password-encrypted";
     public static final String jdbcPrefix = "jdbcPrefix";
     public static final String jdbcOptions = "jdbcOptions";
-    public static final String port = "port";
     public static final String userName = "username";
     public static final String statement = "statement";
     public static final String columns = "columns";

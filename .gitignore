@@ -1,4 +1,5 @@
 /target
 /.idea
 *.iml
-src/test/resources/conf/integration*config.yml
+/src/test/resources/conf/integration-test-config.yml
+/src/test/resources/conf/integration-test-encrypted-config.yml

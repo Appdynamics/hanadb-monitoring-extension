@@ -38,10 +38,8 @@ class HanaDBMonitorTask implements Runnable {
         try {
             MetricPrinter metricPrinter = new MetricPrinter(configuration.getMetricWriter());
             Connection connection = jdbcConnectionAdapter.open(Utilities.getJdbcDriverClass(configuration.getConfigYml()));
-            if (logger.isDebugEnabled()) {
-                logger.debug("Calling DB ={}", jdbcConnectionAdapter.toString());
-            }
             ResultSet resultSet = jdbcConnectionAdapter.queryDatabase(connection, (String) query.get(Globals.statement));
+            if (logger.isDebugEnabled()) { logger.debug("Executing Query={}", query.get(Globals.statement)); }
             while (resultSet.next()) {
                 String metricName = configuration.getMetricPrefix();
                 ArrayList columns = (ArrayList) query.get(Globals.columns);

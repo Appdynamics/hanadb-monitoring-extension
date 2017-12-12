@@ -63,6 +63,7 @@ public class HanaDBMonitor extends AManagedMonitor {
                         for (Map query : queries) {
                             String password = Utilities.getPassword(config);
                             String url = config.get(Globals.jdbcPrefix) + server.get(Globals.host) + config.get(Globals.jdbcOptions);
+                            if (logger.isDebugEnabled()) { logger.debug("Connection with JDBC Connection String={}", url); }
                             JDBCConnectionAdapter jdbcConnectionAdapter = new JDBCConnectionAdapter(url, (String) config.get(Globals.userName), password);
                             HanaDBMonitorTask task = new HanaDBMonitorTask(configuration, jdbcConnectionAdapter, query);
                             configuration.getExecutorService().execute(task);

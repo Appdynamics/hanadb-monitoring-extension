@@ -1,3 +1,7 @@
+### Version 1.3.2
+
+* additional debug logging
+
 ### Version 1.3.1
 
 * fixed config.yml error

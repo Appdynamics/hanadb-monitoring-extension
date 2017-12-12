@@ -27,9 +27,10 @@ Either [Download the Extension from the AppDynamics Marketplace](https://www.app
 3. Set up config.yml:
 
   ```
-  # HanaDB Host/IP and port.
-  host: ""
-  port: ""
+  # HanaDB Servers. If you have Failover Partners please concatenate them here like "<failoverserver1-host>:<failoverserver1-port>;<failoverserver2-host>:<failoverserver2-port>"
+  servers:
+    - server: ""
+
 
   # Specify this key if Password Encryption Support is required. If not keep it empty
   # If specified, DBPassword is now the encrypted passwords.

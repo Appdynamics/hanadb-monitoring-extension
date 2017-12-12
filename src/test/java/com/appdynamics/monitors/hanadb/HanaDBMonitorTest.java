@@ -13,6 +13,7 @@ import org.mockito.stubbing.Answer;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,13 +49,16 @@ public class HanaDBMonitorTest {
         conf.setMetricWriter(writer);
         Map<String,?> config = conf.getConfigYml();
         List<Map> queries = (List<Map>) config.get(Globals.queries);
-        if (queries != null && !queries.isEmpty()) {
-            for (Map query : queries) {
-                String password = Utilities.getPassword(config);
-                String url = Utilities.getURL(config);
-                JDBCConnectionAdapter jdbcConnectionAdapter = new JDBCConnectionAdapter(url, (String) config.get(Globals.userName), password);
-                HanaDBMonitorTask task = new HanaDBMonitorTask(conf, jdbcConnectionAdapter, query);
-                conf.getExecutorService().execute(task);
+        ArrayList servers = (ArrayList) config.get(Globals.hosts);
+        if (queries != null && !queries.isEmpty() && servers != null && !servers.isEmpty()) {
+            for (Map<String, String> server : (Iterable<Map<String, String>>) servers) {
+                for (Map query : queries) {
+                    String password = Utilities.getPassword(config);
+                    String url = config.get(Globals.jdbcPrefix) + server.get(Globals.host) + config.get(Globals.jdbcOptions);
+                    JDBCConnectionAdapter jdbcConnectionAdapter = new JDBCConnectionAdapter(url, (String) config.get(Globals.userName), password);
+                    HanaDBMonitorTask task = new HanaDBMonitorTask(conf, jdbcConnectionAdapter, query);
+                    conf.getExecutorService().execute(task);
+                }
             }
         }
         conf.getExecutorService().awaitTermination(2, TimeUnit.SECONDS);
@@ -73,15 +77,18 @@ public class HanaDBMonitorTest {
        conf.setConfigYml("src/test/resources/conf/integration-test-config.yml");
        Map<String,?> config = conf.getConfigYml();
        List<Map> queries = (List<Map>) config.get(Globals.queries);
-       if (queries != null && !queries.isEmpty()) {
-           for (Map query : queries) {
-               String password = Utilities.getPassword(config);
-               String url = Utilities.getURL(config);
-               JDBCConnectionAdapter jdbcConnectionAdapter = new JDBCConnectionAdapter(url, (String) config.get(Globals.userName), password);
-               Connection conn = jdbcConnectionAdapter.open(Utilities.getJdbcDriverClass(config));
-               ResultSet rs = jdbcConnectionAdapter.queryDatabase(conn, "select * from M_DISK_USAGE where USED_SIZE >= 0");
-               while (rs.next()) {
-                   assertTrue(!rs.wasNull());
+       ArrayList servers = (ArrayList) config.get(Globals.hosts);
+       if (queries != null && !queries.isEmpty() && servers != null && !servers.isEmpty()) {
+           for (Map<String, String> server : (Iterable<Map<String, String>>) servers) {
+               for (Map query : queries) {
+                   String password = Utilities.getPassword(config);
+                   String url = config.get(Globals.jdbcPrefix) + server.get(Globals.host) + config.get(Globals.jdbcOptions);
+                   JDBCConnectionAdapter jdbcConnectionAdapter = new JDBCConnectionAdapter(url, (String) config.get(Globals.userName), password);
+                   Connection conn = jdbcConnectionAdapter.open(Utilities.getJdbcDriverClass(config));
+                   ResultSet rs = jdbcConnectionAdapter.queryDatabase(conn, "select * from M_DISK_USAGE where USED_SIZE >= 0");
+                   while (rs.next()) {
+                       assertTrue(!rs.wasNull());
+                   }
                }
            }
        }

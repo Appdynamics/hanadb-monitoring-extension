@@ -10,7 +10,6 @@ public class Globals {
     public static final String passwordEncrypted = "password-encrypted";
     public static final String jdbcPrefix = "jdbcPrefix";
     public static final String jdbcOptions = "jdbcOptions";
-    public static final String host = "host";
     public static final String port = "port";
     public static final String userName = "username";
     public static final String statement = "statement";
@@ -20,6 +19,8 @@ public class Globals {
     public static final String convertFrom = "convertFrom";
     public static final String convertTo = "convertTo";
     public static final String metric = "metric";
+    public static final String hosts = "hosts";
+    public static final String host = "host";
     public static String jdbcDriverClass = "com.sap.db.jdbc.Driver";
     public static final String driver = "driver";
 }

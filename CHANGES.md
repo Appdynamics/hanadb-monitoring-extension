@@ -4,6 +4,8 @@
 * Encryption Support
 * Logging
 * Test Coverage
+* Support for Failover Partner Format !Not tested due to the lack of appropriate test system!
+* Support for Multiple Clusters !Not tested due to the lack of appropriate test system!
 
 ### Version 1.2
 

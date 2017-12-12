@@ -12,6 +12,7 @@ import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -56,13 +57,16 @@ public class HanaDBMonitor extends AManagedMonitor {
             Map<String, ?> config = configuration.getConfigYml();
             if (config != null) {
                 List<Map> queries = (List<Map>) config.get(Globals.queries);
-                if (queries != null && !queries.isEmpty()) {
-                    for (Map query : queries) {
-                        String password = Utilities.getPassword(config);
-                        String url = Utilities.getURL(config);
-                        JDBCConnectionAdapter jdbcConnectionAdapter = new JDBCConnectionAdapter(url, (String) config.get(Globals.userName), password);
-                        HanaDBMonitorTask task = new HanaDBMonitorTask(configuration, jdbcConnectionAdapter, query);
-                        configuration.getExecutorService().execute(task);
+                ArrayList servers = (ArrayList) config.get(Globals.hosts);
+                if (queries != null && !queries.isEmpty() && servers != null && !servers.isEmpty()) {
+                    for (Map<String, String> server : (Iterable<Map<String, String>>) servers) {
+                        for (Map query : queries) {
+                            String password = Utilities.getPassword(config);
+                            String url = config.get(Globals.jdbcPrefix) + server.get(Globals.host) + config.get(Globals.jdbcOptions);
+                            JDBCConnectionAdapter jdbcConnectionAdapter = new JDBCConnectionAdapter(url, (String) config.get(Globals.userName), password);
+                            HanaDBMonitorTask task = new HanaDBMonitorTask(configuration, jdbcConnectionAdapter, query);
+                            configuration.getExecutorService().execute(task);
+                        }
                     }
                 } else { logger.error("There are no Queries configured."); }
             } else { logger.error("The config.yml is not loaded due to previous errors. The task will not run"); }

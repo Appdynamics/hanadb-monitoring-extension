@@ -31,7 +31,6 @@ Either [Download the Extension from the AppDynamics Marketplace](https://www.app
   servers:
     - server: ""
 
-
   # Specify this key if Password Encryption Support is required. If not keep it empty
   # If specified, DBPassword is now the encrypted passwords.
   encryptionPassword: ""

@@ -1,3 +1,7 @@
+### Version 1.3.1
+
+* fixed config.yml error
+
 ### Version 1.3
 
 * bug fixes

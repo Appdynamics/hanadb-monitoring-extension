@@ -1,3 +1,10 @@
+### Version 1.3
+
+* bug fixes
+* Encryption Support
+* Logging
+* Test Coverage
+
 ### Version 1.2
 
 * bug fixes

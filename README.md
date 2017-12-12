@@ -148,7 +148,7 @@ queries:
 
 ```
 
-##Password Encryption Support
+## Password Encryption Support
 
 To avoid setting the clear text password in the config.yml. Please follow the process to encrypt the password and set the encrypted password and the key in the config.yml
 

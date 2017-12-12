@@ -1,33 +1,17 @@
 package com.appdynamics.monitors.hanadb;
 
-import com.appdynamics.TaskInputArgs;
 import com.appdynamics.extensions.crypto.CryptoUtil;
-import com.appdynamics.monitors.hanadb.config.Config;
+import com.appdynamics.monitors.hanadb.config.Globals;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
 
-import static com.appdynamics.monitors.hanadb.config.Globals.PASSWORD_ENCRYPTED;
-
-/**
- * Created by michi on 20.02.17.
- */
 class Utilities {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Utilities.class);
-
-    static String convertToString(final Object field, final String defaultStr){
-        if(field == null){
-            return defaultStr;
-        }
-        return field.toString();
-    }
-
-    public static String[] split(final String metricType,final String splitOn) {
-        return metricType.split(splitOn);
-    }
 
     static String toBigIntString(final BigDecimal metricValue) {
         return metricValue.setScale(0, RoundingMode.HALF_UP).toBigInteger().toString();
@@ -58,27 +42,34 @@ class Utilities {
         }
     }
 
-    static String getPassword(Config config) {
-        String password = config.getPassword();
+    static String getPassword(Map<String, ?> config) {
+        String password = (String) config.get(Globals.password);
         if (!Strings.isNullOrEmpty(password)) {
             return password;
         }
-        String encryptionKey = config.getEncryptionKey();
-        String encryptedPassword = config.getEncryptionPassword();
+        String encryptionKey = (String) config.get(Globals.encryptionKey);
+        String encryptedPassword = (String) config.get(Globals.passwordEncrypted);
         if (!Strings.isNullOrEmpty(encryptionKey) && !Strings.isNullOrEmpty(encryptedPassword)) {
             java.util.Map<String, String> cryptoMap = Maps.newHashMap();
-            cryptoMap.put(PASSWORD_ENCRYPTED, encryptedPassword);
-            cryptoMap.put(TaskInputArgs.ENCRYPTION_KEY, encryptionKey);
+            cryptoMap.put(Globals.passwordEncrypted, encryptedPassword);
+            cryptoMap.put(Globals.encryptionKey, encryptionKey);
             return CryptoUtil.getPassword(cryptoMap);
         }
         return null;
     }
 
-    static String getURL(Config config) {
-        return config.getJdbcPrefix() +
-                config.getHost() +
+    static String getURL(Map<String, ?> config) {
+        return  config.get(Globals.jdbcPrefix) +
+                (String) config.get(Globals.host) +
                 ":" +
-                config.getPort() +
-                config.getJdbcOptions();
+                config.get(Globals.port) +
+                config.get(Globals.jdbcOptions);
+    }
+
+    static String getJdbcDriverClass(Map<String, ?> config) {
+        if(config.get(Globals.driver) != null){
+            Globals.jdbcDriverClass = (String) config.get(Globals.driver);
+        }
+        return Globals.jdbcDriverClass;
     }
 }

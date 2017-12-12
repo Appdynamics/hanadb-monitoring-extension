@@ -1,3 +1,5 @@
+<!--suppress ALL -->
+
 <monitor>
     <name>HanaDB Monitor</name>
     <type>managed</type>

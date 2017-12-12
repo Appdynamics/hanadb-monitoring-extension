@@ -1,13 +1,26 @@
 package com.appdynamics.monitors.hanadb;
 
+import com.appdynamics.extensions.conf.MonitorConfiguration;
+import com.appdynamics.extensions.util.MetricWriteHelper;
+import com.appdynamics.monitors.hanadb.config.Globals;
 import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("ALL")
 public class HanaDBMonitorTest {
 
     @Test
@@ -18,4 +31,59 @@ public class HanaDBMonitorTest {
         TaskOutput result = new HanaDBMonitor().execute(taskArgs, null);
         assertTrue(result.getStatusMessage().contains("Metric Upload Complete"));
     }
+
+    @Test
+    public void testHanaDBMonitorTask() throws Exception {
+        MetricWriteHelper writer = Mockito.mock(MetricWriteHelper.class);
+        Runnable runner = Mockito.mock(Runnable.class);
+        MonitorConfiguration conf = new MonitorConfiguration(Globals.defaultMetricPrefix, runner, writer);
+        conf.setConfigYml("src/test/resources/conf/integration-test-config.yml");
+        Mockito.doAnswer(new Answer() {
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                Object[] args = invocationOnMock.getArguments();
+                System.out.println(args[0] + "=" + args[1]);
+                return null;
+            }
+        }).when(writer).printMetric(Mockito.anyString(), Mockito.any(BigDecimal.class), Mockito.anyString());
+        conf.setMetricWriter(writer);
+        Map<String,?> config = conf.getConfigYml();
+        List<Map> queries = (List<Map>) config.get(Globals.queries);
+        if (queries != null && !queries.isEmpty()) {
+            for (Map query : queries) {
+                String password = Utilities.getPassword(config);
+                String url = Utilities.getURL(config);
+                JDBCConnectionAdapter jdbcConnectionAdapter = new JDBCConnectionAdapter(url, (String) config.get(Globals.userName), password);
+                HanaDBMonitorTask task = new HanaDBMonitorTask(conf, jdbcConnectionAdapter, query);
+                conf.getExecutorService().execute(task);
+            }
+        }
+        conf.getExecutorService().awaitTermination(2, TimeUnit.SECONDS);
+    }
+
+    @Test(expected = TaskExecutionException.class)
+    public void testHanaDBMonitorTaskExcecutionException() throws Exception {
+        new HanaDBMonitor().execute(null, null);
+    }
+
+   @Test
+   public void testHanaDBQuery() throws Exception {
+       MetricWriteHelper writer = Mockito.mock(MetricWriteHelper.class);
+       Runnable runner = Mockito.mock(Runnable.class);
+       MonitorConfiguration conf = new MonitorConfiguration(Globals.defaultMetricPrefix, runner, writer);
+       conf.setConfigYml("src/test/resources/conf/integration-test-config.yml");
+       Map<String,?> config = conf.getConfigYml();
+       List<Map> queries = (List<Map>) config.get(Globals.queries);
+       if (queries != null && !queries.isEmpty()) {
+           for (Map query : queries) {
+               String password = Utilities.getPassword(config);
+               String url = Utilities.getURL(config);
+               JDBCConnectionAdapter jdbcConnectionAdapter = new JDBCConnectionAdapter(url, (String) config.get(Globals.userName), password);
+               Connection conn = jdbcConnectionAdapter.open(Utilities.getJdbcDriverClass(config));
+               ResultSet rs = jdbcConnectionAdapter.queryDatabase(conn, "select * from M_DISK_USAGE where USED_SIZE >= 0");
+               while (rs.next()) {
+                   assertTrue(!rs.wasNull());
+               }
+           }
+       }
+   }
 }

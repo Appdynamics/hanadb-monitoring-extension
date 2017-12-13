@@ -27,22 +27,22 @@ Either [Download the Extension from the AppDynamics Marketplace](https://www.app
 3. Set up config.yml:
 
   ```
-  # HanaDB Servers. If you have Failover Partners please concatenate them here like "<failoverserver1-host>:<failoverserver1-port>;<failoverserver2-host>:<failoverserver2-port>"
-  hosts:
-    - host: ""
-
-  # Specify this key if Password Encryption Support is required. If not keep it empty
-  # If specified, DBPassword is now the encrypted passwords.
-  encryptionPassword: ""
-  encryptionKey: ""
-
-  # DB username and password.
+  # HanaDB Servers. 
+  # If you have Failover Partners please concatenate them here like:
+  # "<failoverserver1-host>:<failoverserver1-port>;<failoverserver2-host>:<failoverserver2-port>"
+  # Specify encryptionPassword and encryptionKey if Password Encryption Support is required. If not keep it empty.
   # User needs the permissions MONITORING and PUBLIC
-  username: ""
-  password: ""
-
-  jdbcPrefix: "jdbc:sap://"
-  jdbcOptions: "?communicationtimeout=2000"
+  clusters:
+    - connectionString: "jdbc:sap://<cluster1_host1>:<port>;<cluster1_host2>:<port>?communicationtimeout=20000"
+      username: ""
+      password: ""
+      encryptionPassword: ""
+      encryptionKey: ""
+    - connectionString: "jdbc:sap://<cluster2_host1>:<port>;<cluster2_host2>:<port>?communicationtimeout=20000"
+      username: ""
+      password: ""
+      encryptionPassword: ""
+      encryptionKey: ""
 
   # prefix used to show up metrics in AppDynamics
   metricPathPrefix: "Custom Metrics|HanaDB"
@@ -160,7 +160,9 @@ To avoid setting the clear text password in the config.yml. Please follow the pr
 
 Always feel free to fork and contribute any changes directly via [GitHub](https://github.com/michaelenglert/hanadb-monitoring-extension).
 
-## Community
+## Troubleshoot
+
+* If you encounter Exceptions with `[Read timed out]` please check the `communicationtimeout` setting within the `connectionString`. The query and the processing time might not fit into the specified window.
 
 ## Support
 

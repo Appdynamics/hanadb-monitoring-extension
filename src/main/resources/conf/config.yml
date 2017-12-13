@@ -1,21 +1,17 @@
-# HanaDB Servers. If you have Failover Partners please concatenate them here like "<failoverserver1-host>:<failoverserver1-port>;<failoverserver2-host>:<failoverserver2-port>"
-hosts:
-  - host: ""
-
-# Specify this key if Password Encryption Support is required. If not keep it empty
-# If specified, DB Password is now the encrypted passwords.
-password-encrypted: ""
-encryption-key: ""
-
-# DB username and password.
-username: ""
-password: ""
-
-jdbcPrefix: "jdbc:sap://"
-jdbcOptions: "?communicationtimeout=2000"
+# HanaDB Servers.
+# If you have Failover Partners please concatenate them here like:
+# "<failoverserver1-host>:<failoverserver1-port>;<failoverserver2-host>:<failoverserver2-port>"
+# Specify encryptionPassword and encryptionKey if Password Encryption Support is required. If not keep it empty.
+# User needs the permissions MONITORING and PUBLIC
+clusters:
+  - connectionString: "jdbc:sap://<host>:<port>?communicationtimeout=20000"
+    username: ""
+    password: ""
+    encryptionPassword: ""
+    encryptionKey: ""
 
 # prefix used to show up metrics in AppDynamics
-metricPrefix: "Custom Metrics|HanaDB"
+metricPathPrefix: "Custom Metrics|HanaDB"
 # This will create it in specific Tier. Replace <TIER_ID>
 # metricPrefix:  "Server|Component:<TIER_ID>|Custom Metrics|HanaDB Server|"
 # number of concurrent tasks

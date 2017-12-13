@@ -1,12 +1,12 @@
 # HanaDB Servers.
+clusters:
 # If you have Failover Partners please concatenate them here like:
 # "<failoverserver1-host>:<failoverserver1-port>;<failoverserver2-host>:<failoverserver2-port>"
-# Specify encryptionPassword and encryptionKey if Password Encryption Support is required. If not keep it empty.
-# User needs the permissions MONITORING and PUBLIC
-clusters:
   - connectionString: "jdbc:sap://<host>:<port>?communicationtimeout=20000"
+# User needs the permissions MONITORING and PUBLIC
     username: ""
     password: ""
+# Specify encryptionPassword and encryptionKey if Password Encryption Support is required. If not keep it empty.
     encryptionPassword: ""
     encryptionKey: ""
 

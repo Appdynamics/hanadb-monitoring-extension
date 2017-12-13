@@ -1,5 +1,5 @@
 /target
-/lib
-hanadb-monitoring-extension.iml
 /.idea
-.DS_Store
+*.iml
+/src/test/resources/conf/integration-test-config.yml
+/src/test/resources/conf/integration-test-encrypted-config.yml

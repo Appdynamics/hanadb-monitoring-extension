@@ -1,3 +1,9 @@
+### Version 1.3.9.0 (Beta)
+
+* implemented changes to support different username/passwords
+* added troubleshooting doc
+* increased default communication timeout
+
 ### Version 1.3.2
 
 * additional debug logging

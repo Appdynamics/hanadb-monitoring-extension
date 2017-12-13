@@ -18,7 +18,6 @@ public class Globals {
     public static final String convertTo = "convertTo";
     public static final String metric = "metric";
     public static final String clusters = "clusters";
-    public static final String host = "host";
     public static String jdbcDriverClass = "com.sap.db.jdbc.Driver";
     public static final String driver = "driver";
 }

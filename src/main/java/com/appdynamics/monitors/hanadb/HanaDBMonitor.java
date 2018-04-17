@@ -24,16 +24,14 @@ public class HanaDBMonitor extends AManagedMonitor {
     public HanaDBMonitor() { logger.info(String.format("Using HanaDB Monitor Version [%s]", getImplementationVersion())); }
 
     public void initialize(Map<String, String> argsMap) {
-        if (configuration == null) {
-            MetricWriteHelper metricWriteHelper = MetricWriteHelperFactory.create(this);
-            MonitorConfiguration conf = new MonitorConfiguration(Globals.defaultMetricPrefix,
-                    new TaskRunnable(), metricWriteHelper);
-            final String configFilePath = argsMap.get(Globals.configFile);
-            conf.setConfigYml(configFilePath);
-            conf.setMetricWriter(MetricWriteHelperFactory.create(this));
-            conf.checkIfInitialized(ConfItem.CONFIG_YML, ConfItem.EXECUTOR_SERVICE, ConfItem.METRIC_PREFIX, ConfItem.METRIC_WRITE_HELPER);
-            this.configuration = conf;
-        }
+        MetricWriteHelper metricWriteHelper = MetricWriteHelperFactory.create(this);
+        MonitorConfiguration conf = new MonitorConfiguration(Globals.defaultMetricPrefix,
+                new TaskRunnable(), metricWriteHelper);
+        final String configFilePath = argsMap.get(Globals.configFile);
+        conf.setConfigYml(configFilePath);
+        conf.setMetricWriter(MetricWriteHelperFactory.create(this));
+        conf.checkIfInitialized(ConfItem.CONFIG_YML, ConfItem.EXECUTOR_SERVICE, ConfItem.METRIC_PREFIX, ConfItem.METRIC_WRITE_HELPER);
+        this.configuration = conf;
     }
 
     public TaskOutput execute(Map<String, String> map, TaskExecutionContext taskExecutionContext) throws TaskExecutionException {
@@ -57,14 +55,14 @@ public class HanaDBMonitor extends AManagedMonitor {
             Map<String, ?> config = configuration.getConfigYml();
             if (config != null) {
                 List<Map> queries = (List<Map>) config.get(Globals.queries);
-                ArrayList servers = (ArrayList) config.get(Globals.hosts);
-                if (queries != null && !queries.isEmpty() && servers != null && !servers.isEmpty()) {
-                    for (Map<String, String> server : (Iterable<Map<String, String>>) servers) {
+                ArrayList clusters = (ArrayList) config.get(Globals.clusters);
+                if (queries != null && !queries.isEmpty() && clusters != null && !clusters.isEmpty()) {
+                    for (Map<String, String> cluster : (Iterable<Map<String, String>>) clusters) {
                         for (Map query : queries) {
-                            String password = Utilities.getPassword(config);
-                            String url = config.get(Globals.jdbcPrefix) + server.get(Globals.host) + config.get(Globals.jdbcOptions);
+                            String password = Utilities.getPassword(cluster);
+                            String url = cluster.get(Globals.connectionString);
                             if (logger.isDebugEnabled()) { logger.debug("Connection with JDBC Connection String={}", url); }
-                            JDBCConnectionAdapter jdbcConnectionAdapter = new JDBCConnectionAdapter(url, (String) config.get(Globals.userName), password);
+                            JDBCConnectionAdapter jdbcConnectionAdapter = new JDBCConnectionAdapter(url, cluster.get(Globals.userName), password);
                             HanaDBMonitorTask task = new HanaDBMonitorTask(configuration, jdbcConnectionAdapter, query);
                             configuration.getExecutorService().execute(task);
                         }

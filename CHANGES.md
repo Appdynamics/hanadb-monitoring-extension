@@ -1,3 +1,17 @@
+### Version 1.4.1
+
+* Fixed config.yml change bug
+
+### Version 1.4
+
+* Release Version 1.4
+
+### Version 1.3.9.0 (Beta)
+
+* implemented changes to support different username/passwords
+* added troubleshooting doc
+* increased default communication timeout
+
 ### Version 1.3.2
 
 * additional debug logging

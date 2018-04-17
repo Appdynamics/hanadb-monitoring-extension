@@ -1,3 +1,7 @@
+### Version 1.4.1
+
+* Fixed config.yml change bug
+
 ### Version 1.4
 
 * Release Version 1.4

@@ -1,3 +1,7 @@
+### Version 1.4
+
+* Release Version 1.4
+
 ### Version 1.3.9.0 (Beta)
 
 * implemented changes to support different username/passwords

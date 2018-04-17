@@ -1,4 +1,4 @@
-# AppDynamics HanaDB - Monitoring Extension
+# AppDynamics SAP HanaDB Monitoring Extension
 
 This extension works only with the standalone machine agent.
 
